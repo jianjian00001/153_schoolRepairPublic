@@ -1,0 +1,50 @@
+# 配置MySQL数据连接
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/schoolRepair?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8
+    username: root
+    password: root
+  main:
+    allow-bean-definition-overriding: true
+#  接口日期格式
+  mvc:
+    format:
+      date: yyyy-MM-dd
+#  返回日期格式
+  jackson:
+    date-format: yyyy-MM-dd
+    time-zone: GMT+8
+
+#  mail:
+#    host: smtp.qq.com
+#    username:
+#    password:
+#    port: 587
+#    protocol: smtp
+#    default-encoding: UTF-8
+#    test-connection: true
+#    properties:
+#      mail:
+#        smtp:
+#          socketFactoryClass: javax.net.ssl.SSLSocketFactory
+#        #表示开启 DEBUG 模式，这样，邮件发送过程的日志会在控制台打印出来，方便排查错误
+#        debug: true
+# 服务端口
+server:
+  port: 9999
+#  servlet:
+#    context-path: /repair
+
+
+# mybatis xml
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.xpu.repair.pojo.entity
+  configuration:
+    #日志
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    #开启自动驼峰转换
+    map-underscore-to-camel-case: true
+    auto-mapping-behavior: full
+

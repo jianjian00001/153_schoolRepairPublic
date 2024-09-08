@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xpu.repair.mapper.MaintenanceMapper">
+
+    <resultMap id="maintenanceVoMap" type="com.xpu.repair.pojo.vo.MaintenanceVO">
+        <result property="id" column="m_id"/>
+        <result property="startTime" column="m_start_time"/>
+        <result property="endTime" column="m_end_time"/>
+        <result property="pictureUrl" column="m_picture_url"/>
+        <association property="repair" javaType="com.xpu.repair.pojo.entity.Repair">
+            <result property="id" column="r_id"/>
+            <result property="status" column="r_status"/>
+            <result property="detail" column="r_detail"/>
+            <result property="place" column="r_place"/>
+            <result property="pictureUrl" column="r_picture_url"/>
+            <result property="submitTime" column="r_submit_time"/>
+            <result property="userId" column="r_user_id"/>
+        </association>
+        <association property="technician" javaType="com.xpu.repair.pojo.entity.Technician">
+            <result property="id" column="t_id"/>
+            <result property="name" column="t_name"/>
+        </association>
+    </resultMap>
+
+    <sql id="maintenanceVO_select">
+        select r.id as r_id,r.detail as r_detail,r.place as r_place,r.picture_url as r_picture_url,r.submit_time as r_submit_time,r.user_id as r_user_id,r.status as r_status,
+        t.id as t_id,t.`name` as t_name,
+        m.id as m_id,m.start_time as m_start_time,m.end_time as m_end_time,m.picture_url as m_picture_url
+        from repair r JOIN maintenance m ON r.id = m.repair_id
+        JOIN technician t on t.id = m.technician_id
+    </sql>
+
+    <select id="findAllMaintenanceVO" resultMap="maintenanceVoMap">
+        <include refid="maintenanceVO_select"></include>
+    </select>
+
+<!--    <select id="findSuccessMaintenanceVO" resultMap="maintenanceVoMap">-->
+<!--        <include refid="maintenanceVO_select"></include>-->
+<!--        where m.end_time is not null-->
+<!--    </select>-->
+
+    <select id="listUnCompleteMaintenanceByTechnicianId" resultMap="maintenanceVoMap">
+        <include refid="maintenanceVO_select"></include>
+        where t.id = #{technicianId} and m.end_time is null
+    </select>
+
+    <select id="listCompleteMaintenanceByTechnicianId" resultMap="maintenanceVoMap">
+        <include refid="maintenanceVO_select"></include>
+        where m.end_time is not null
+        <if test="technicianId != null">
+            and t.id = #{technicianId}
+        </if>
+        <if test="startTime != null and endTime != null">
+            and m.end_time between #{startTime} and #{endTime}
+        </if>
+    </select>
+
+    <select id="listCompleteMaintenance" resultMap="maintenanceVoMap">
+        <include refid="maintenanceVO_select"></include>
+        where m.end_time is not null
+        <if test="technicianId != null">
+            and t.id = #{technicianId}
+        </if>
+        <if test="startTime != null and endTime != null">
+            and m.end_time between #{startTime} and #{endTime}
+        </if>
+    </select>
+
+    <select id="listUnCompleteMaintenanceByUserId" resultMap="maintenanceVoMap">
+        <include refid="maintenanceVO_select"></include>
+        where r.user_id = #{userId} and m.end_time is null
+    </select>
+
+    <select id="listCompleteMaintenanceByUserId"  resultMap="maintenanceVoMap">
+        <include refid="maintenanceVO_select"></include>
+        where r.user_id = #{userId} and m.end_time is not null
+    </select>
+
+</mapper>

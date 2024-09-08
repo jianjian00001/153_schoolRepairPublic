@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xpu.repair.mapper.UrgentrepairMapper">
+    <resultMap id="urgentrepairMap" type="com.xpu.repair.pojo.vo.UrgentrepairVo">
+        <result property="id" column="u_id"/>
+        <result property="createTime" column="u_create_time"/>
+        <association property="repair" javaType="com.xpu.repair.pojo.entity.Repair">
+            <result property="id" column="r_id"/>
+            <result property="detail" column="r_detail"/>
+            <result property="place" column="r_place"/>
+            <result property="status" column="r_status"/>
+        </association>
+    </resultMap>
+
+    <select id="listVo" resultMap="urgentrepairMap">
+        select r.id as r_id,r.detail as r_detail,r.place as r_place,r.`status` as r_status,u.create_time as u_create_time,u.id as u_id
+        from urgentrepair AS u join
+        `repair` AS r on u.repair_id = r.id
+--         join maintenance as m on r.id = m.repair_id
+        <where>
+            <if test="userId != null">
+                and u.user_id = #{userId}
+            </if>
+        </where>
+    </select>
+</mapper>

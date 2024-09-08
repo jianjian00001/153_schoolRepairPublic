@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xpu.repair.mapper.RepairMapper">
+
+    <resultMap id="repairVoMap" type="com.xpu.repair.pojo.vo.RepairVO">
+        <result property="id" column="r_id"/>
+        <result property="detail" column="r_detail"/>
+        <result property="place" column="r_place"/>
+        <result property="status" column="r_status"/>
+        <result property="submitTime" column="r_submit_time"/>
+        <result property="pictureUrl" column="r_picture_url"/>
+        <association property="user" javaType="com.xpu.repair.pojo.entity.User">
+            <result property="id" column="u_id"/>
+            <result property="name" column="u_name"/>
+            <result property="sexual" column="u_sexual"/>
+            <result property="email" column="u_name"/>
+            <result property="phone" column="u_phone"/>
+            <result property="password" column="u_password"/>
+        </association>
+    </resultMap>
+
+    <sql id="selectRepair">
+        select
+        r.id as r_id,r.detail as r_detail,r.place as r_place,r.picture_url as r_picture_url,r.`status` as r_status,r.submit_time as r_submit_time,
+        u.id as u_id,u.`name` as u_name,u.email as u_email,u.sexual as u_sexual,u.phone as u_phone,u.`password` as u_password
+        from `repair` r join `user` u  on r.user_id = u.id
+    </sql>
+
+    <select id="listRepairDetail" resultMap="repairVoMap">
+        <include refid="selectRepair"></include>
+    </select>
+
+    <select id="listRepairDetailByRepair" parameterType="com.xpu.repair.pojo.entity.Repair" resultMap="repairVoMap">
+        <include refid="selectRepair"></include>
+        <where>
+            <if test="repair.userId!= null">
+                and u.id = #{repair.userId}
+            </if>
+            <if test="repair.status != null">
+                and r.status = #{repair.status}
+            </if>
+        </where>
+    </select>
+
+    <select id="listReminderDetail" resultMap="repairVoMap">
+        <include refid="selectRepair"></include>
+        where r.status != 2
+    </select>
+    <select id="findAllRepairs" resultMap="repairVoMap">
+        <include refid="selectRepair"></include>
+    </select>
+
+    <select id="listRepairByUserIdAndStatus" resultMap="repairVoMap">
+        <include refid="selectRepair"></include>
+        where u.id=#{userId} and r.status = #{statusId}
+    </select>
+</mapper>
